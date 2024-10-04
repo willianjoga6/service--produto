@@ -3,6 +3,7 @@ package com.produto.serviceproduto.config;
 import com.produto.serviceproduto.data.response.ErroResponse;
 import jakarta.persistence.NoResultException;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.IllegalFormatFlagsException;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class ExceptionControllerAdvice {
@@ -26,6 +28,18 @@ public class ExceptionControllerAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErroResponse InputIncorreto(MethodArgumentTypeMismatchException e){
         return new ErroResponse("X_200", "Formato do parametro inválido", "TO DO");
+    }
+
+    @ResponseBody
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErroResponse MethodArgument(MethodArgumentNotValidException e){
+        String mensagen = e.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(fieldError -> fieldError.getField()+ " "+ fieldError.getDefaultMessage())
+                .collect(Collectors.joining());
+        return new ErroResponse("X_200", mensagen, "TO DO");
     }
 
     @ResponseBody

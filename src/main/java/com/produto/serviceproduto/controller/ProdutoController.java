@@ -4,6 +4,7 @@ import com.produto.serviceproduto.data.request.ProdutoRequest;
 import com.produto.serviceproduto.data.response.ProdutoResponse;
 import com.produto.serviceproduto.model.ProdutoEntity;
 import com.produto.serviceproduto.service.ProdutoService;
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,9 +26,9 @@ public class ProdutoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ProdutoResponse Cadastrar(@RequestBody ProdutoRequest produto)
+    public ProdutoResponse Cadastrar(@Valid @RequestBody ProdutoRequest produto)
     {
-        ProdutoEntity produtoEntity = new ProdutoEntity(produto.descricao(), produto.preco());
+        ProdutoEntity produtoEntity = new ProdutoEntity(produto.getDescricao(), produto.getPreco());
 
         ProdutoEntity inserirProduto = _produtoService.inserir(produtoEntity);
 
@@ -36,6 +37,7 @@ public class ProdutoController {
     }
 
     @GetMapping("{id}")
+
     public ProdutoResponse Consultar(@PathVariable("id") long id){
 
         ProdutoEntity consultarProduto = _produtoService.consultar(id);

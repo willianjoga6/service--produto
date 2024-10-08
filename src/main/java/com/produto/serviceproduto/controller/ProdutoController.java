@@ -1,47 +1,36 @@
 package com.produto.serviceproduto.controller;
 
 import com.produto.serviceproduto.data.request.ProdutoRequest;
-import com.produto.serviceproduto.data.response.ProdutoResponse;
 import com.produto.serviceproduto.model.ProdutoEntity;
 import com.produto.serviceproduto.service.ProdutoService;
 import jakarta.validation.Valid;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("produto")
 
-public class ProdutoController {
+public class ProdutoController implements ProdutoControllerInterface {
 
     private ProdutoService _produtoService;
-    @Autowired
-    private ModelMapper _modelMapper;
 
-    public ProdutoController(ProdutoService _produtoService, ModelMapper _modelMapper) {
+    public ProdutoController(ProdutoService _produtoService) {
         this._produtoService = _produtoService;
-        this._modelMapper = _modelMapper;
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ProdutoResponse Cadastrar(@Valid @RequestBody ProdutoRequest produto)
-    {
+    @PostMapping    @ResponseStatus(HttpStatus.CREATED)
+    @Override
+    public ProdutoEntity Cadastrar(@Valid @RequestBody ProdutoRequest produto){
+
         ProdutoEntity produtoEntity = new ProdutoEntity(produto.getDescricao(), produto.getPreco());
 
-        ProdutoEntity inserirProduto = _produtoService.inserir(produtoEntity);
-
-        return _modelMapper.map(inserirProduto, ProdutoResponse.class);
-
+        return _produtoService.inserir(produtoEntity);
     }
 
     @GetMapping("{id}")
+    @Override
+    public ProdutoEntity Consultar(@PathVariable("id") long id){
 
-    public ProdutoResponse Consultar(@PathVariable("id") long id){
-
-        ProdutoEntity consultarProduto = _produtoService.consultar(id);
-
-        return _modelMapper.map(consultarProduto, ProdutoResponse.class);
+        return _produtoService.consultar(id);
     }
 }
